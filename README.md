@@ -1,2 +1,3 @@
-# tensorflow_exercises
-working with tensorflow in google colaboratory
+# miscellaneous
+
+scripts & the like
