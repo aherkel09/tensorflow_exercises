@@ -18,14 +18,14 @@ class WordnetReader:
 
     def get_all_offsets(self):
         for file in self.tsv_files:
-            file_offsets = self.get_wordnet_offsets(file)
+            file_offsets = self.get_file_offsets(file)
             for offset in file_offsets:
                 if offset not in self.offset_list:
                     self.offset_list.append(offset)
 
         return self.offset_list
 
-    def get_wordnet_offsets(self, file):
+    def get_file_offsets(self, file):
         offsets = []
         with open(file, 'r') as tsv:
             tsv = csv.reader(tsv, delimiter='\t')
