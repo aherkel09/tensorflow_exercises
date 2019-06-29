@@ -9,7 +9,7 @@ class WordnetReader:
 
     def get_tsv_files(self):
         file_list = []
-        for subdir, dirs, files in os.walk(self.root_directory):
+        for subdir, dirs, files in os.walk(self.root_directory): # check all files in all subdirectories
             for filename in files:
                 if filename.endswith('.tsv'):
                     file_list.append(os.path.join(subdir, filename))
@@ -29,14 +29,21 @@ class WordnetReader:
         offsets = []
         with open(file, 'r') as tsv:
             tsv = csv.reader(tsv, delimiter='\t')
-            next(tsv) # skip header row
+            offset_column = self.get_column_number(next(tsv)) # get offset column number from header row
             for row in tsv:
-                if row[4].isdigit() and row[4] not in offsets:
-                    offsets.append(int(row[4]))
+                if row[offset_column].isdigit() and row[offset_column] not in offsets:
+                    offsets.append(int(row[offset_column]))
 
         return offsets
 
-if __name__ == '__main__':    
+    def get_column_number(self, first_line):
+        for col in range(len(first_line)):
+            if first_line[col] == 'category_id':
+                return col
+
+        raise ValueError('"category_id" not found in', first_line)
+
+if __name__ == '__main__':
     reader = WordnetReader()
     offset_list = reader.get_all_offsets()
 
