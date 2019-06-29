@@ -20,10 +20,8 @@ class WordnetReader:
     def get_all_offsets(self):
         offsets = {}
         for subdir, file_list in self.tsv_files.items():
-            print('subdir at', subdir)
             subdir_offsets = []
             for file in file_list:
-                print('file at', file)
                 file_offsets = self.get_file_offsets(file)
                 subdir_offsets += [f for f in file_offsets if f not in subdir_offsets]
             offsets[subdir] = subdir_offsets
@@ -43,11 +41,14 @@ class WordnetReader:
         return offset_list
 
     def compare_values(self, offsets):
-        compare = []
+        compare_dir = None
+        compare_offsets = []
         for o in offsets:
-            if len(compare) == 0:
-                compare = offsets[o]
-            elif offsets[o] != compare:
+            if len(compare_offsets) == 0:
+                compare_dir = o
+                compare_offsets = offsets[o]
+            elif offsets[o] != compare_offsets:
+                print('\nError: Wordnet offsets in\n', compare_dir, '\ndo not match offsets in\n', o, '\n')
                 raise ValueError('Wordnet Offsets Do Not Match')
 
         return compare
