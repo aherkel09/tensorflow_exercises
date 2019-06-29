@@ -4,37 +4,53 @@ from nltk.corpus import wordnet as wn
 class WordnetReader:
     def __init__(self):
         self.root_directory = os.getcwd()
-        self.offset_list = []
         self.tsv_files = self.get_tsv_files()
 
     def get_tsv_files(self):
-        file_list = []
+        file_tree = {}
         for subdir, dirs, files in os.walk(self.root_directory): # check all files in all subdirectories
             for filename in files:
-                if filename.endswith('.tsv'):
-                    file_list.append(os.path.join(subdir, filename))
+                if filename.endswith('.tsv') and subdir in file_tree.keys():
+                    file_tree[subdir].append(os.path.join(subdir, filename))
+                elif filename.endswith('.tsv'):
+                    file_tree[subdir] = [os.path.join(subdir, filename)]
 
-        return file_list
+        return file_tree
 
     def get_all_offsets(self):
-        for file in self.tsv_files:
-            file_offsets = self.get_file_offsets(file)
-            for offset in file_offsets:
-                if offset not in self.offset_list:
-                    self.offset_list.append(offset)
+        offsets = {}
+        for subdir, file_list in self.tsv_files.items():
+            print('subdir at', subdir)
+            subdir_offsets = []
+            for file in file_list:
+                print('file at', file)
+                file_offsets = self.get_file_offsets(file)
+                subdir_offsets += [f for f in file_offsets if f not in subdir_offsets]
+            offsets[subdir] = subdir_offsets
 
-        return self.offset_list
+        offsets = self.compare_values(offsets) # make sure all subdirs have same offset values
+        return offsets
 
     def get_file_offsets(self, file):
-        offsets = []
+        offset_list = []
         with open(file, 'r') as tsv:
             tsv = csv.reader(tsv, delimiter='\t')
             offset_column = self.get_column_number(next(tsv)) # get offset column number from header row
             for row in tsv:
-                if row[offset_column].isdigit() and row[offset_column] not in offsets:
-                    offsets.append(int(row[offset_column]))
+                if row[offset_column].isdigit() and int(row[offset_column]) not in offset_list:
+                    offset_list.append(int(row[offset_column]))
 
-        return offsets
+        return offset_list
+
+    def compare_values(self, offsets):
+        compare = []
+        for o in offsets:
+            if len(compare) == 0:
+                compare = offsets[o]
+            elif offsets[o] != compare:
+                raise ValueError('Wordnet Offsets Do Not Match')
+
+        return compare
 
     def get_column_number(self, first_line):
         for col in range(len(first_line)):
