@@ -1,44 +1,54 @@
 import csv, os
 
 class TSVReader:
+    # create reader instance for files matching file_extension
     def __init__(self):
         self.root_directory = os.getcwd()
-        self.tsv_files = self.get_tsv_files()
-
-    def get_tsv_files(self):
+        self.tsv_files = {}
+    
+    #create file_tree object with format {subdir1: [file1, file2, ...], ...}
+    def get_files(self):
         file_tree = {}
-        for subdir, dirs, files in os.walk(self.root_directory): # check all files in all subdirectories
+        
+        # check all files in all subdirectories
+        for subdir, dirs, files in os.walk(self.root_directory + '\\tsv'):
             for filename in files:
                 if filename.endswith('.tsv') and subdir in file_tree.keys():
                     file_tree[subdir].append(os.path.join(subdir, filename))
                 elif filename.endswith('.tsv'):
                     file_tree[subdir] = [os.path.join(subdir, filename)]
 
+        self.tsv_files = file_tree
         return file_tree
+    
+    def get_column_headers(self, file):
+        with open(file, 'r') as f:
+            reader = csv.reader(f, delimiter='\t')
+            return next(reader)
+    
+    def get_column_number(self, columns, match):
+        number = [c for c in range(len(columns)) if columns[c] == match]
+        if len(number) == 1:
+            return number[0]
+        else:
+            # if column not found or column header not unique
+            print(match, 'matched', number)
+            raise ValueError('Column was matched ' + len(number) + ' times.')
 
-    # create a single file for each column in tsv_files
-    def create_column_files(self):
-        for file_list in self.tsv_files.values():
-            for file in file_list:
-                self.write_column_data(file)
+    def read_column_data(self, file, col_num):
+        with open(file, 'r') as f:
+            data = []
+            reader = csv.reader(f, delimiter='\t')
+            next(reader) # skip  header row
 
-    def write_column_data(self, file):
-        with open(file, 'r') as tsv:
-            reader = csv.reader(tsv, delimiter='\t')
-            columns = next(reader) # get column headers from first line
+            for row in reader:
+                # create list of column data
+                data.append(row[col_num])
 
-            for c in range(len(columns)):
-
-                with open(columns[c] + '.tsv', 'a') as col_file:
-                    data = []
-                    writer = csv.writer(col_file)
-
-                    for row in reader:
-                        data.append(row[c])
-
-                    print(data)
-                    # writer.writerow(data)
+            return data
 
 if __name__ == '__main__':
     reader = TSVReader()
-    reader.create_column_files()
+    files = reader.get_files()
+    print(files)
+    
