@@ -36,7 +36,8 @@ class TSVReader:
                     for row in reader:
                         data.append(row[c])
 
-                    writer.writerow(data)
+                    print(data)
+                    # writer.writerow(data)
 
 if __name__ == '__main__':
     reader = TSVReader()
