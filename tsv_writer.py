@@ -2,7 +2,7 @@ import csv, os
 
 class TSVWriter:
     def __init__(self, out_file):
-        self.out_file = out_file
+        self.out_file = 'tsv_out\\' + out_file
         self.root_directory = os.getcwd()
         self.filepath = os.path.join(self.root_directory, self.out_file)
 
