@@ -19,31 +19,34 @@ def compare_headers(reader, file_tree):
 def write_all_columns(reader, file_tree, headers):
     for subdir, file_list in file_tree.items():
         for f in file_list:
-            
+            run = f.split('-')[1][:2]
             for h in headers:
-                writer = TSVWriter(h + '.tsv')
+                writer = TSVWriter(h + '-' + str(int(run)) + '.tsv')
                 col_num = reader.get_column_number(headers, h)
                 col_data = reader.read_column_data(f, col_num)
                 writer.write_column_data(h, col_data)
 
 def compare_all_data(headers):
-    unmatched = [True for h in headers]
+    run = 1
+    
+    while run <= 20:
+        unmatched = [True for h in headers]
+        
+        for h in range(len(headers)):
+            prev_row = None
+            with open('tsv_out\\' + headers[h] + '-' + str(run) + '.tsv', 'r') as tsv:
+                reader = csv.reader(tsv, delimiter='\t')
 
-    for h in range(len(headers)):
-        prev_row = None
-        with open(headers[h] + '.tsv', 'r') as tsv:
-            reader = csv.reader(tsv, delimiter='\t')
+                row_count = 0
+                for row in reader:
+                    if not prev_row:
+                        prev_row = row
+                    elif row_count % 2 == 0 and row != prev_row:
+                        unmatched[h] = headers[h]
+                    row_count += 1
 
-            row_count = 0
-            for row in reader:
-                if not prev_row:
-                    prev_row = row
-                elif row_count % 2 == 0 and row != prev_row:
-                    print(row_count, "doesn't match!")
-                    unmatched[h] = headers[h]
-                row_count += 1
-
-    print('Unmatched rows:', [u for u in unmatched if u != True])
+        print('Unmatched rows in run ' + str(run) + ':', [u for u in unmatched if u != True])
+        run += 1
         
 if __name__ == '__main__':
     reader = TSVReader()
