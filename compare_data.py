@@ -34,7 +34,8 @@ def compare_all_data(headers):
         
         for h in range(len(headers)):
             prev_row = None
-            with open('tsv_out\\' + headers[h] + '-' + str(run) + '.tsv', 'r') as tsv:
+            filestring = 'tsv_out\\' + headers[h] + '-' + str(run) + '.tsv'
+            with open(filestring, 'r') as tsv:
                 reader = csv.reader(tsv, delimiter='\t')
 
                 row_count = 0
@@ -45,7 +46,7 @@ def compare_all_data(headers):
                         unmatched[h] = headers[h]
                     row_count += 1
 
-        print('Unmatched rows in run ' + str(run) + ':', [u for u in unmatched if u != True])
+        print('Unmatched columns in run ' + str(run) + ':', [u for u in unmatched if u != True])
         run += 1
         
 if __name__ == '__main__':
