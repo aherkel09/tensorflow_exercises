@@ -11,7 +11,7 @@ class TSVReader:
         file_tree = {}
         
         # check all files in all subdirectories
-        for subdir, dirs, files in os.walk(self.root_directory + '\\tsv'):
+        for subdir, dirs, files in os.walk(self.root_directory + '\\tsv_in'):
             for filename in files:
                 if filename.endswith('.tsv') and subdir in file_tree.keys():
                     file_tree[subdir].append(os.path.join(subdir, filename))
