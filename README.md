@@ -1,3 +1,3 @@
-# miscellaneous
+# ccn_scripts
 
-scripts & the like
+scripts for data analysis
