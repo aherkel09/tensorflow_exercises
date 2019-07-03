@@ -37,33 +37,52 @@ class WordnetRowReader:
 
         return offset_list
 
-    def find_duplicates(self, offsets):
-        duplicates = {}
+    def drop_duplicate_runs(self, offsets):
+        duplicates = []
+        check = 1
+
+        while check < 20:
+            for run in offsets:
+                if offsets[run] == offsets[str(check)] and run != str(check):
+                    duplicates.append(run)
+            check += 1
+
+        for d in duplicates:
+            offsets.pop(d)
+
+        return offsets
+
+    def drop_duplicate_rows(self, offsets):
         for run in offsets:
             check = None
-            row_count = 1
+            row_count = 0
             for row in offsets[run]:
                 if check and row == check:
-                    if run in duplicates.keys():
-                        duplicates[run].append(row_count)
-                    else:
-                        duplicates[run] = [row_count]
+                    before = [offsets[run][r] for r in range(len(offsets[run])) if r < row_count]
+                    after = [offsets[run][r] for r in range(len(offsets[run])) if r >= row_count and offsets[run][r] != check]
+                    offsets[run] = before + after
                 elif not check:
                     check = row
                 row_count += 1
 
-        return duplicates
+        return offsets
 
 if __name__ == '__main__':
     reader = WordnetRowReader()
-    run_offsets = reader.get_all_offsets()
-    print(reader.find_duplicates(run_offsets))
-'''
-    for run in run_offsets:
-        for row in run_offsets[run]:
-            print('\nRow', row)
-            for offset in range(len(row)):
-                print('Offset', offset)
-                #synset = wn.synset_from_pos_and_offset('n', offset)
-                #print(synset.lemmas()[0].name())
-'''
+    offsets = reader.get_all_offsets()
+    offsets = reader.drop_duplicate_runs(offsets)
+    offsets = reader.drop_duplicate_rows(offsets)
+
+    for run in offsets:
+        for row in range(len(offsets[run])):
+            print('\nRun:', run, 'Row:', row)
+            lemmas = []
+            for offset in offsets[run][row]:
+                synset = wn.synset_from_pos_and_offset('n', offset)
+                lemmas.append(synset.lemmas()[0].name())
+            print(lemmas)
+
+            for x in range(len(lemmas)):
+                for l in range(len(lemmas)):
+                    if x != l and lemmas[l] == lemmas[x]:
+                        print('duplicate!')
