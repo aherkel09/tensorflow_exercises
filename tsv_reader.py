@@ -5,11 +5,11 @@ class TSVReader:
     def __init__(self):
         self.root_directory = os.getcwd()
         self.tsv_files = {}
-    
+
     #create file_tree object with format {subdir1: [file1, file2, ...], ...}
     def get_files(self):
         file_tree = {}
-        
+
         # check all files in all subdirectories
         for subdir, dirs, files in os.walk(self.root_directory + '\\tsv_in'):
             for filename in files:
@@ -20,12 +20,12 @@ class TSVReader:
 
         self.tsv_files = file_tree
         return file_tree
-    
+
     def get_column_headers(self, file):
         with open(file, 'r') as f:
             reader = csv.reader(f, delimiter='\t')
             return next(reader)
-    
+
     def get_column_number(self, columns, match):
         number = [c for c in range(len(columns)) if columns[c] == match]
         if len(number) == 1:
@@ -49,6 +49,6 @@ class TSVReader:
 
 if __name__ == '__main__':
     reader = TSVReader()
+    print(reader.root_directory)
     files = reader.get_files()
     print(files)
-    
