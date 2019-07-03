@@ -38,7 +38,7 @@ class LemmaClassifier:
                 run_categories.append(row_categories)
 
             categories[run] = run_categories
-        
+            
         return categories
 
     def ask_category(self, row):
@@ -120,3 +120,4 @@ if __name__ == '__main__':
     categories = classifier.drop_duplicate_rows(categories)
 
     request_action(lemmas, categories)
+    
