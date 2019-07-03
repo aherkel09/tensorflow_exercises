@@ -78,7 +78,7 @@ class LemmaClassifier:
 
     def write_categories(self, categories):
         for run in categories:
-            with open('living_nonliving-' + run, 'a') as tsv:
+            with open('wordnet\\living_nonliving-' + run + '.tsv', 'a') as tsv:
                 writer = csv.writer(tsv, delimiter='\t')
                 writer.writerows(categories[run])
 
