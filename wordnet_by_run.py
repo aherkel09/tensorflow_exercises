@@ -54,35 +54,43 @@ class WordnetRowReader:
 
     def drop_duplicate_rows(self, offsets):
         for run in offsets:
-            check = None
-            row_count = 0
+            run_list = []
+            
             for row in offsets[run]:
-                if check and row == check:
-                    before = [offsets[run][r] for r in range(len(offsets[run])) if r < row_count]
-                    after = [offsets[run][r] for r in range(len(offsets[run])) if r >= row_count and offsets[run][r] != check]
-                    offsets[run] = before + after
-                elif not check:
-                    check = row
-                row_count += 1
+                if row not in run_list:
+                    run_list.append(row)
 
+            offsets[run] = run_list
+            
         return offsets
+
+    def get_lemmas(self, offsets):
+        lemmas = {}
+        for run in offsets:
+            row_list = []
+            for row in offsets[run]:
+                lemma_list = []
+                for offset in row:
+                    synset = wn.synset_from_pos_and_offset('n', offset)
+                    lemma_list.append(synset.lemmas()[0].name())
+                row_list.append(lemma_list)
+            lemmas[run] = row_list
+
+        return lemmas
+
+    def write_lemmas(self, lemmas):
+        for l in lemmas:
+            with open('wordnet\\lemmas-' + l + '.tsv', 'a') as tsv:
+                writer = csv.writer(tsv, delimiter='\t')
+                writer.writerows(lemmas[l])
+    
 
 if __name__ == '__main__':
     reader = WordnetRowReader()
     offsets = reader.get_all_offsets()
     offsets = reader.drop_duplicate_runs(offsets)
     offsets = reader.drop_duplicate_rows(offsets)
-
-    for run in offsets:
-        for row in range(len(offsets[run])):
-            print('\nRun:', run, 'Row:', row)
-            lemmas = []
-            for offset in offsets[run][row]:
-                synset = wn.synset_from_pos_and_offset('n', offset)
-                lemmas.append(synset.lemmas()[0].name())
-            print(lemmas)
-
-            for x in range(len(lemmas)):
-                for l in range(len(lemmas)):
-                    if x != l and lemmas[l] == lemmas[x]:
-                        print('duplicate!')
+    
+    lemmas = reader.get_lemmas(offsets)
+    reader.write_lemmas(lemmas)
+    
