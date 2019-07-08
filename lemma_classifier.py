@@ -32,7 +32,7 @@ class LemmaClassifier:
     def classify_lemmas(self, lemmas):
         categories = {}
         for run in lemmas:
-            print('\nRun' + run)
+            print('\nClassifying Run ' + run + '...')
             run_categories = []
             
             for row in lemmas[run]:
@@ -49,6 +49,7 @@ class LemmaClassifier:
                 run_categories.append(row_categories)
 
             categories[run] = run_categories
+            print('Done.')
             
         return categories
 
