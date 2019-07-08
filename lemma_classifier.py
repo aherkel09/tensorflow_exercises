@@ -4,6 +4,7 @@ class LemmaClassifier:
     def __init__(self):
         self.root_directory = os.getcwd()
         self.lemma_files = self.get_lemma_files()
+        self.lemmas = {}
 
     def get_lemma_files(self):
         file_tree = {}
@@ -33,22 +34,28 @@ class LemmaClassifier:
         for run in lemmas:
             print('\nRun' + run)
             run_categories = []
+            
             for row in lemmas[run]:
-                row_categories = self.ask_category(row)
+                row_categories = []
+                
+                for lemma in row:
+                    if lemma not in self.lemmas.keys():
+                        category = self.ask_category(lemma)
+                        self.lemmas[lemma] = category
+                    else:
+                        category = self.lemmas[lemma]
+                    row_categories.append(category)
+                        
                 run_categories.append(row_categories)
 
             categories[run] = run_categories
             
         return categories
 
-    def ask_category(self, row):
-        categories = []
-        for lemma in row:
-            category = input('Is ' + lemma + ' living or nonliving? (1/2): ')
-            if category == '1' or category == '2':
-                categories.append(int(category))
-
-        return categories
+    def ask_category(self, lemma):
+        category = input('Is ' + lemma + ' living or nonliving? (1/2): ')
+        if category == '1' or category == '2':
+            return int(category)
 
     def drop_duplicate_runs(self, categories):
         duplicates = []
