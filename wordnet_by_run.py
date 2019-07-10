@@ -80,7 +80,7 @@ class WordnetRowReader:
 
     def write_lemmas(self, lemmas):
         for l in lemmas:
-            with open('wordnet\\lemmas-' + l + '.tsv', 'a') as tsv:
+            with open('tsv_out\\lemmas-' + l + '.tsv', 'a') as tsv:
                 writer = csv.writer(tsv, delimiter='\t')
                 writer.writerows(lemmas[l])
     
