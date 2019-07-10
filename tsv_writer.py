@@ -16,11 +16,10 @@ class TSVWriter:
 
         return True
 
-    def write_column_data(self, header, col_data):
+    def write_column_data(self, col_data):
         with open(self.out_file, 'a') as f:
-            data = [header] + col_data
             writer = csv.writer(f, delimiter='\t')
-            writer.writerow(data)
+            writer.writerow(col_data)
 
 if __name__ == '__main__':
     writer = TSVWriter('writer_test.tsv')
