@@ -8,7 +8,7 @@ class LemmaClassifier:
 
     def get_lemma_files(self):
         file_tree = {}
-        for subdir, dirs, files in os.walk(self.root_directory + '\\wordnet'): # check all files in all subdirectories
+        for subdir, dirs, files in os.walk(self.root_directory + '\\tsv_out'): # check all files in all subdirectories
             for filename in files:
                 if filename.startswith('lemmas'):
                     run = filename.split('-')[1].replace('.tsv', '')
@@ -86,7 +86,7 @@ class LemmaClassifier:
 
     def write_categories(self, categories):
         for run in categories:
-            with open('wordnet\\living_nonliving-' + run + '.tsv', 'a') as tsv:
+            with open('tsv_out\\living_nonliving-' + run + '.tsv', 'a') as tsv:
                 writer = csv.writer(tsv, delimiter='\t')
                 writer.writerows(categories[run])
 
