@@ -1,22 +1,6 @@
 import codecs, csv, os
 from pathlib import Path
 
-# FIXME: create file in proper location for all runs & subjects
-def write_to_file(run_data):
-    with open('horikawa.par', 'w', newline='') as par:
-        writer = csv.writer(par, delimiter='\t')
-        writer.writerow(run_data.keys()) # headers
-        num_rows = len(run_data['Duration']) # get list length from arbitrary column
-
-        row = 0
-        while row < num_rows:
-            row_data = []
-            for data in run_data:
-                row_data.append(run_data[data][row])
-                
-            writer.writerow(row_data)
-            row += 1
-
 def get_tsv_data():
     data = {}
     
@@ -51,5 +35,58 @@ def get_codes(file):
                     
     return codes
 
+def get_output_files(data):
+    files = {}
+    
+    for run in data:
+        files[run] = get_run_files(run)
+
+    return files
+
+def get_run_files(run):
+    files = []
+    
+    # format run for file output
+    if run < 10:
+        run = '00' + str(run)
+    else:
+        run = '0' + str(run)
+
+    # map data rows to subjects (based on tsv_in data)
+    rows_to_subjects = {
+        1: ['1', '2', '3'],
+        2: ['4'],
+        3: ['5']
+    }
+    
+    for row in rows_to_subjects:
+        for subject in rows_to_subjects[row]:
+            filename = 'FS_0' + subject + '\\bold\\' + run + '\\horikawa.par'
+            filepath = os.path.join(os.getcwd(), filename)
+            files.append(filepath)
+            
+    return files
+
+# FIXME: function writing 3 rows of lists instead of 25 rows of values
+def write_by_run(data, files):
+    for run in data:
+        for file in files[run]:
+            with open(file, 'w', newline='') as par:
+                writer = csv.writer(par, delimiter='\t')
+                writer.writerow(data[run].keys()) # headers
+
+                col = 0
+                num_cols = len(data[run]['Duration']) # get list length from arbitrary column
+                while col < num_cols:
+                    col_data = []
+                    for r in data[run]:
+                        # get column data for subject & run
+                        col_data.append(data[run][r][col])
+
+                    writer.writerow(col_data)
+                    col += 1
+
 if __name__ == '__main__':
-    print(get_tsv_data())
+    data = get_tsv_data()
+    files = get_output_files(data)
+    write_by_run(data, files)
