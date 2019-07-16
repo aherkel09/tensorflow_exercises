@@ -4,10 +4,10 @@ def get_par_files():
     filepaths = []
     root_dir = os.getcwd()
     
-    for subdirs, dirs, files in os.walk(root_dir):
+    for dirpath, subdirs, files in os.walk(root_dir):
         for filename in files:
             if filename.startswith('horikawa.par'):
-                path = os.path.join(dir, filename)
+                path = os.path.join(dirpath, filename)
                 filepaths.append(path)
                 
     return filepaths
