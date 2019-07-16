@@ -33,7 +33,7 @@ def write_file_data(file, headers, data):
 
 def rename_column(headers):
     print('Original:', headers)
-    headers = ['Cumulative_Onset' for h in headers else h if h == 'Cululative_Onset']
+    headers = ['Cumulative_Onset' if h == 'Cululative_Onset' else h for h in headers]
     print('Corrected:', headers)
     
     return headers
