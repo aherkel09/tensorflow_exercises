@@ -1,0 +1,4 @@
+abcd.db filter=lfs diff=lfs merge=lfs -text
+abd.db filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
+abcd_data/*.csv filter=lfs diff=lfs merge=lfs -text
