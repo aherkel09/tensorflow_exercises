@@ -9,4 +9,4 @@ class Writer:
                 writer.writerow(h)
                 
             for d in data:
-                writer.writerow(data[d])
+                writer.writerow(d)

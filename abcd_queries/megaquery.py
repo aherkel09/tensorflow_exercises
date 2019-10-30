@@ -1,4 +1,4 @@
-import sqlite3, json
+import sqlite3, json, csv
 from queries import Queries
 
 class MegaQuery:
@@ -53,7 +53,14 @@ class MegaQuery:
         
     def output_result(self):
         result = self.cursor.fetchall()
-        print('\nResult:', len(result), 'Subjects')
+        print('\nResult:', len(result), 'rows')
+
+        with open('subjects.csv', 'w', newline='\n') as csv_out:
+            writer = csv.writer(csv_out)
+            writer.writerow(['subjectkey'])
+            writer.writerow(['The NDAR Global Unique Identifier ' +
+                             '(GUID) for research subject'])
+            writer.writerows(result)
         
 
 if __name__ == '__main__':
