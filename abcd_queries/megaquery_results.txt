@@ -1,0 +1,52 @@
+Connected to database abcd.db
+
+Creating temporary tables from queries...
+
+                                    SELECT DISTINCT subjectkey FROM ehis01
+                                    WHERE ehi1b=100 AND ehi2b=100
+                                    AND ehi3b=100 AND ehi4b=100;
+                                
+                                    SELECT DISTINCT subjectkey FROM fastqc01 
+                                    WHERE ftq_complete=1 AND ftq_quality=1 
+                                    AND ftq_recalled=0 AND ftq_usable=1 
+                                    AND NULLIF(ftq_notes, " ") IS NULL;
+
+                                    SELECT DISTINCT subjectkey FROM mrinback02;
+
+                                    SELECT DISTINCT subjectkey FROM tbss01
+                                    WHERE nihtbx_picvocab_fc>49
+                                    AND nihtbx_flanker_fc>49
+                                    AND nihtbx_list_fc>49
+                                    AND nihtbx_cardsort_fc>49
+                                    AND nihtbx_pattern_fc>49
+                                    AND nihtbx_picture_fc>49
+                                    AND nihtbx_reading_fc>49
+                                    AND nihtbx_fluidcomp_fc>49
+                                    AND nihtbx_cryst_fc>49
+                                    AND nihtbx_totalcomp_fc>49;
+                                
+Building MegaQuery...
+
+Attempting to execute MegaQuery:
+
+                        CREATE TEMPORARY TABLE subjects AS
+                        SELECT mrin.subjectkey FROM mrinback02_temp mrin
+                     	JOIN ehis01_temp ehis ON ehis.subjectkey=mrin.subjectkey 
+			JOIN fastqc01_temp fast ON fast.subjectkey=mrin.subjectkey 
+			JOIN tbss01_temp tbss ON tbss.subjectkey=mrin.subjectkey
+
+Success. Found 97 subjects.
+
+Filtering data by subject...
+
+CREATE TEMPORARY TABLE ehis01_filtered AS SELECT * FROM ehis01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE fastqc01_filtered AS SELECT * FROM fastqc01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE freesqc01_filtered AS SELECT * FROM freesqc01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE it01_filtered AS SELECT * FROM it01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE mri01_filtered AS SELECT * FROM mri01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE mrinback02_filtered AS SELECT * FROM mrinback02 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE ps01_filtered AS SELECT * FROM ps01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE tbi01_filtered AS SELECT * FROM tbi01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+CREATE TEMPORARY TABLE tbss01_filtered AS SELECT * FROM tbss01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+
+MegaQuery complete!
