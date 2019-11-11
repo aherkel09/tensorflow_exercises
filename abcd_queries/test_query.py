@@ -23,14 +23,31 @@ def match_files():
     r_one = []
     r_two = []
     
-    with open('ehis01_filtered.csv', 'r') as f_one:
+    with open('/ccn_scripts/abcd_data/ehis01_filtered.csv', 'r') as f_one:
         r_one = [r[1:] for r in csv.reader(f_one)]
 
-    with open('/ccn_scripts/abcd_data/ehis01.csv', 'r') as f_two:
-        r_two = [r for r in csv.reader(f_two)]
+    with open('/ccn_scripts/abcd_data/fastqc01_filtered.csv', 'r') as f_two:
+        r_two = [r[1:] for r in csv.reader(f_two)]
 
-    print(len(r_one) == len(r_two))
+    return (r_one, r_two)
+
+def num_unique():
+    data = match_files()
+    first_subjects = []
+    second_subjects = []
+    
+    for d in data[0]:
+        if d[3] not in first_subjects:
+            first_subjects += [d[3]]
+
+    for d in data[1]:
+        if d[3] not in second_subjects:
+            second_subjects += [d[3]]
+
+    print(len(first_subjects))
+    print(len(second_subjects))
+    print(first_subjects == second_subjects)
 
 if __name__ == '__main__':
     print('starting...')
-    query()
+    num_unique()

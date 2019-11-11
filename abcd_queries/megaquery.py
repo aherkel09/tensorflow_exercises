@@ -16,7 +16,7 @@ class MegaQuery:
         self.conn = sqlite3.connect(self.db_file)
         self.cursor = self.conn.cursor()
         self.results = open('megaquery_results.txt', 'w')
-        self.results.write('Connected to database ' + self.db_file)
+        self.results.write('Connected to database ' + self.db_file + '\n')
         
         
     def create_tables(self):
@@ -24,7 +24,7 @@ class MegaQuery:
         self.queries = Queries()
         
         for q in self.queries.all:
-            self.results.write(self.queries.all[q][1])
+            self.results.write('\n' + self.queries.all[q][1] + '\n')
             self.cursor.execute('CREATE TEMPORARY TABLE ' + 
                                 q + '_temp AS ' + self.queries.all[q][1])
             
@@ -33,7 +33,7 @@ class MegaQuery:
                 
     
     def build_the_big_one(self):
-        self.results.write('\nBuilding MegaQuery...')
+        self.results.write('\nBuilding MegaQuery...\n')
         megaquery = ('''
                         CREATE TEMPORARY TABLE subjects AS
                         SELECT mrin.subjectkey FROM mrinback02_temp mrin
@@ -55,12 +55,12 @@ class MegaQuery:
     
     def execute(self):
         try:
-            self.results.write('\nAttempting to execute MegaQuery:\n' + self.megaquery)
+            self.results.write('\nAttempting to execute MegaQuery:\n\n' + self.megaquery + '\n')
             self.cursor.execute(self.megaquery)
             self.cursor.execute('SELECT * FROM subjects')
             self.results.write('\nSuccess. Found ' +
                                str(len(self.cursor.fetchall())) +
-                               ' subjects.')
+                               ' subjects.\n')
             self.output_results()
         except Exception as e:
             print(e)
@@ -72,7 +72,7 @@ class MegaQuery:
         subjects = 'SELECT subjectkey FROM subjects'
         query = 'SELECT * FROM ' + table + ' WHERE subjectkey IN (' + subjects + ');'
         create_table = 'CREATE TEMPORARY TABLE ' + new_table + ' AS ' + query
-        self.results.write(create_table)
+        self.results.write('\n' + create_table + '\n')
         self.cursor.execute(create_table)
         self.write_results(new_table)
         
@@ -82,21 +82,21 @@ class MegaQuery:
         columns = [d[0] for d in self.cursor.description]
         data = self.cursor.fetchall()
         
-        with open('/ccn_scripts/abcd_data/' + table + '.csv', 'w', newline='\n') as csv_out:
+        with open('/ccn_scripts/abcd_data/filtered/' + table + '.csv', 'w', newline='\n') as csv_out:
             writer = csv.writer(csv_out)
             writer.writerow(columns)
             writer.writerows(data)
 
 
     def output_results(self):
-        self.results.write('\nFiltering data by subject...')
+        self.results.write('\nFiltering data by subject...\n')
         tables = [t[0] for t in self.cursor.execute('''
                         SELECT name FROM sqlite_master
                         WHERE type="table";
                         ''').fetchall()]
 
         for t in tables:
-            if t not in ['abcd', 'subjects'] and '_temp' not in t:
+            if t != 'abcd' and '_temp' not in t:
                 self.create_new_table(t)
 
         self.results.write('\nMegaQuery complete!')
