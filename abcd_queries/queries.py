@@ -9,9 +9,11 @@ class Queries:
             'fastqc01': ['fast', '''
                                     SELECT DISTINCT subjectkey FROM fastqc01
                                     WHERE subjectkey NOT IN (
-                                        SELECT subjectkey FROM fastqc01 
-                                        WHERE ftq_complete=0 OR ftq_quality=0 
-                                        OR ftq_recalled=1 OR ftq_usable=0
+                                        SELECT subjectkey FROM fastqc01
+                                        WHERE abcd_compliant<>1
+                                        OR ftq_complete<>1 OR ftq_quality<>1 
+                                        OR ftq_recalled<>0 OR ftq_usable<>1
+                                        OR ftq_notes IS NOT NULL
                                     )
                                     AND ftq_complete=1 AND ftq_quality=1 
                                     AND ftq_recalled=0 AND ftq_usable=1 
