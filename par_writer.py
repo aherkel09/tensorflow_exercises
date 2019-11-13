@@ -1,119 +1,118 @@
-import codecs, csv, os
+import csv, os
 
 class ParWriter:
     def __init__(self):
-        self.data = self.get_tsv_data()
-        self.files = self.get_output_files()
-    
-    def get_tsv_data(self):
-        data = {}
-        
-        run = 1
-        while run <= 20:
-            data[run] = self.get_run_data(run)
-            run += 1
-            
-        return data
-
-    def get_run_data(self, run):
-        root_directory = os.getcwd() + '\\tsv_out'
-        category_file = os.path.join(root_directory, 'living_nonliving-' + str(run) + '.tsv')
-
-        unique_rows = 3 # number of unique rows of data in living_nonliving files
-        run_data = {
-            'Cululative_Onset': [[(36 + 24*n) for n in range(0,25)]]*unique_rows, # onsets per tsv data
-            'Condition_Number_Code': self.get_codes(category_file),
-            'Duration': [[15 for d in range(0,25)]]*unique_rows, # durations per tsv data
-            'Weight': [[1 for w in range(0, 25)]]*unique_rows, # set all weights to 1
+        self.dir = self.ask_dir()
+        self.ext = self.ask_ext()
+        self.headers = []
+        self.files = []
+        self.col_data = {}
+        self.filter = {}
+        self.conditions = None
+        self.delimiters = {
+            '.csv': ',',
+            '.tsv': '\t'
         }
-        
-        return run_data
 
-    def get_codes(self, file):
-        # get living_nonliving codes from file
-        codes = []
-        with open(file, 'rb') as tsv:
-            reader = csv.reader(codecs.iterdecode(tsv, 'utf-8'), delimiter='\t')
-            for row in reader:
-                codes.append(row)
-                        
-        return codes
+    def ask_dir(self):
+        location = input('enter the directory containing your data files' +
+        '(all files & subdirectories will be searched): ')
 
-    def get_output_files(self):
-        files = {}
-        
-        for run in self.data:
-            files[run] = self.get_run_files(run)
-
-        return files
-
-    def get_run_files(self, run):
-        files = []
-        
-        # format run for file output
-        if run < 10:
-            run = '00' + str(run)
+        if os.path.isdir(location):
+            return location
         else:
-            run = '0' + str(run)
+            print('error: please enter a valid directory')
+            return self.ask_dir()
+
+    def ask_ext(self):
+        ext = input('enter the extension of your data files (.csv, .tsv): ')
+        if ext in ['.csv', '.tsv']:
+            return ext
+        else:
+            print('error: please enter a supported file extension')
+            return self.ask_ext()
+
+    def get_files(self):
+        for path, subdirs, files in os.walk(self.dir):
+            for name in files:
+                if name.endswith(self.ext):
+                    self.add_to_files(os.path.join(path, name))
+
+    def add_to_files(self, path):
+        with open(path, 'r') as f:
+            reader = csv.reader(f, delimiter=self.delimiters[self.ext])
+            if self.match_headers(next(reader)):
+                self.files += [path]
+            else:
+                raise ValueError(
+                    'found nonmatching headers in file', path)
+
+    def match_headers(self, headers):
+        if not len(self.headers):
+            self.headers = headers
+            return True
+        elif headers == self.headers:
+            return True
+        return False
+
+    def get_data(self):
+        print('found', len(self.files), 'files')
+        print('columns:', self.headers)
         
-        for row in self.rows_to_subjects():
-            for subject in self.rows_to_subjects(row):
-                filename = 'tsv_out\\FS_0' + subject + '\\bold\\' + run + '\\horikawa.par'
-                filepath = os.path.join(os.getcwd(), filename)
-                files.append((subject, filepath))
-                
-        return files
+        self.col_data['Cumulative_Onset'] = self.ask_col_name('onset')
+        self.col_data['Duration'] = self.ask_col_name('duration')
+        self.filter = self.ask_filter()
+        self.conditions = self.ask_conditions()
 
-    def rows_to_subjects(self, row=None):
-        # map data rows to subjects (based on tsv_in data)
-        rows_to_subjects = {
-            1: ['1', '2', '3'],
-            2: ['4'],
-            3: ['5']
-        }
+    def ask_col_name(self, col):
+        name = input('enter the name of the ' + col + ' column: ')
+        if name in self.headers:
+            return name
+        else:
+            print('error: enter a valid column name')
+            return self.ask_col_name(col)
 
-        if row:
-            return rows_to_subjects[row]
+    def ask_filter(self):
+        action = input(
+            'do you wish to (1) keep all trials or (2) filter by trial type? (1/2): ')
+        if action == '2':
+            return self.ask_trial_info()
+        elif action == 1:
+            return None # proceed
+        else:
+            print('error: please enter a valid choice')
+            return self.ask_filter()
 
-        return rows_to_subjects
+    def ask_trial_info(self):
+        trial_col = input('enter the column containing the trial type info: ')
+        if trial_col in self.headers:
+            keep = input('enter the list of values you wish to keep: ')
+            return {'field': trial_col, 'values': keep.split(', ')}
+        else:
+            print('error: enter a valid column name')
+            return self.ask_trial_info()
 
-    def write_by_run(self):
-        for run in self.data:
-            for file in self.files[run]:
-                with open(file[1], 'w', newline='') as par:
-                    print('Writing data for subject ' + file[0] + ', run ' + str(run))
-                    subject_data = self.get_subject_data(file[0], self.data[run])
-                    row_data = self.get_row_data(subject_data)
-                    
-                    writer = csv.writer(par, delimiter='\t')
-                    writer.writerow(self.data[run].keys()) # headers
-                    writer.writerows(row_data)
-                    
-    def get_subject_data(self, subject, run_data):
-        subject_data = []
+    def ask_conditions(self):
+        num_conditions = input('enter the number of conditions: ')
+        try:
+            num_conditions = int(num_conditions)
+            return self.assign_conditions(num_conditions)
+        except:
+            print('error: enter an integer number of conditions')
+            return self.ask_conditions()
+
+    def assign_conditions(self, num_conditions):
+        if num_conditions == 1:
+            return num_conditions
+        else:
+            return self.get_condition_file()
+
+    def get_condition_file(self):
+        file = input('enter the path to your condition file: ')
+        return file
         
-        for row in self.rows_to_subjects():
-            if subject in self.rows_to_subjects(row):
-                for d in run_data:
-                    subject_data.append(run_data[d][row-1])
-
-        return subject_data
-
-    def get_row_data(self, subject_data):
-        same_length = [False for s in subject_data if len(s) != len(subject_data[0])]
-        row_data = []
-
-        if False not in same_length: # verify all rows have same length
-            for i in range(len(subject_data[0])):
-                line_data = []
-                
-                for s in subject_data:
-                    line_data.append(s[i])
-                    
-                row_data.append(line_data)
-                
-        return row_data
-
 if __name__ == '__main__':
-    writer = ParWriter()
-    writer.write_by_run()
+    par = ParWriter()
+    par.get_files()
+    par.get_data()
+    print(par.col_data)
