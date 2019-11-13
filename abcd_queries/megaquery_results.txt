@@ -25,16 +25,16 @@ SELECT DISTINCT subjectkey FROM mrinback02;
 
 
                                     SELECT DISTINCT subjectkey FROM tbss01
-                                    WHERE nihtbx_picvocab_fc>49
-                                    AND nihtbx_flanker_fc>49
-                                    AND nihtbx_list_fc>49
-                                    AND nihtbx_cardsort_fc>49
-                                    AND nihtbx_pattern_fc>49
-                                    AND nihtbx_picture_fc>49
-                                    AND nihtbx_reading_fc>49
-                                    AND nihtbx_fluidcomp_fc>49
-                                    AND nihtbx_cryst_fc>49
-                                    AND nihtbx_totalcomp_fc>49;
+                                    WHERE nihtbx_picvocab_fc>45
+                                    AND nihtbx_flanker_fc>45
+                                    AND nihtbx_list_fc>45
+                                    AND nihtbx_cardsort_fc>45
+                                    AND nihtbx_pattern_fc>45
+                                    AND nihtbx_picture_fc>45
+                                    AND nihtbx_reading_fc>45
+                                    AND nihtbx_fluidcomp_fc>45
+                                    AND nihtbx_cryst_fc>45
+                                    AND nihtbx_totalcomp_fc>45;
                                 
 
 Building MegaQuery...
@@ -46,7 +46,7 @@ Attempting to execute MegaQuery:
                         SELECT mrin.subjectkey FROM mrinback02_temp mrin
                      JOIN ehis01_temp ehis ON ehis.subjectkey=mrin.subjectkey JOIN fastqc01_temp fast ON fast.subjectkey=mrin.subjectkey JOIN tbss01_temp tbss ON tbss.subjectkey=mrin.subjectkey
 
-Success. Found 12 subjects.
+Success. Found 41 subjects.
 
 Filtering data by subject...
 

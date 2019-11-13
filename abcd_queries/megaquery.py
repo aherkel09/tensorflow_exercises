@@ -1,4 +1,4 @@
-import sqlite3, json, csv
+import sqlite3, csv, os
 from queries import Queries
 
 class MegaQuery:
@@ -81,8 +81,7 @@ class MegaQuery:
         self.cursor.execute('SELECT * FROM ' + table)
         columns = [d[0] for d in self.cursor.description]
         data = self.cursor.fetchall()
-        
-        with open('/ccn_scripts/abcd_data/filtered/' + table + '.csv', 'w', newline='\n') as csv_out:
+        with open('abcd_data/filtered/' + table + '.csv', 'w', newline='\n') as csv_out:
             writer = csv.writer(csv_out)
             writer.writerow(columns)
             writer.writerows(data)
