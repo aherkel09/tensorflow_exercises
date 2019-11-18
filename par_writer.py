@@ -23,26 +23,23 @@ class ParWriter:
             reader = csv.reader(f, delimiter=self.fetcher.delimiters[self.fetcher.ext])
             next(reader) # skip headers
             for row in reader:
-                file_data += [self.read_row(row)]
+                trial_filter = self.fetcher.filter
+                
+                if len(row):
+                    # only add data if trial type matches filter, or if there is no filter
+                    if (trial_filter and row[trial_filter['field']] in trial_filter['values']) or not trial_filter:
+                        file_data += [self.read_row(row)]
 
         return file_data
 
     def read_row(self, row):
-        if len(row):
             cols = self.fetcher.col_data
-            fil = self.fetcher.filter
-            
-            if fil and row[fil['field']] not in fil['values']:
-                return []
-            else:
-                return [
-                    row[cols['Cumulative_Onset']],
-                    self.get_condition(row[cols['Data']]),
-                    row[cols['Duration']],
-                    1
-                    ]
-        else:
-            return []
+            return [
+                row[cols['Cumulative_Onset']],
+                self.get_condition(row[cols['Data']]),
+                row[cols['Duration']],
+                1
+                ]
 
     def get_condition(self, data):
         condition_file = self.fetcher.conditions['filepath']

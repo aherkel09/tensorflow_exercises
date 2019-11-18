@@ -24,7 +24,7 @@ def overwrite(files):
     for file in files:
         data = split_data(file)
         
-        with open(file, 'w') as f:
+        with open(file, 'w', newline='') as f:
             writer = csv.writer(f, delimiter='\t')
             writer.writerows(data)
 
