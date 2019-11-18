@@ -68,7 +68,7 @@ class DataFetcher:
         self.output_file = self.ask_output_file()
 
     def ask_col_name(self, col):
-        name = input('enter the name of the column containing ' + col + ' : ')
+        name = input('enter the name of the column containing ' + col + ': ')
         if name in self.headers:
             return self.headers.index(name)
         else:

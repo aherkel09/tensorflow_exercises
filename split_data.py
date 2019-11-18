@@ -4,7 +4,7 @@ def split_data(file):
     file_data = []
     with open(file, 'r') as f:
         reader = csv.reader(f, delimiter='\t')
-        file_data += next(reader)
+        file_data += [next(reader)]
         for row in reader:
             row[4] = row[4].split('.')[0]
             file_data += [row]

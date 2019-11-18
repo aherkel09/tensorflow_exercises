@@ -6,31 +6,43 @@ class ParWriter:
         self.fetcher = DataFetcher()
 
     def write_all(self):
+        index = 1
+        
+        if not os.path.isdir('par_files'):
+            os.mkdir('par_files')
+            
         for f in self.fetcher.files:
-            self.write_file(self.read_file(f), f)
+            data = self.read_file(f)
+            out_path = os.path.join('par_files', self.fetcher.output_file + str(index))
+            self.write_file(data, out_path)
+            index += 1
 
-    def read_file(self, file):
+    def read_file(self, fname):
         file_data = []
-
-        with open(file, 'r') as f:
+        with open(fname, 'r') as f:
             reader = csv.reader(f, delimiter=self.fetcher.delimiters[self.fetcher.ext])
             next(reader) # skip headers
             for row in reader:
-                file_data += self.read_row(row)
+                file_data += [self.read_row(row)]
+
+        return file_data
 
     def read_row(self, row):
-        cols = self.fetcher.col_data
-        fil = self.fetcher.filter
-        
-        if fil and row[fil['field']] not in fil['values']:
-            return ''
+        if len(row):
+            cols = self.fetcher.col_data
+            fil = self.fetcher.filter
+            
+            if fil and row[fil['field']] not in fil['values']:
+                return []
+            else:
+                return [
+                    row[cols['Cumulative_Onset']],
+                    self.get_condition(row[cols['Data']]),
+                    row[cols['Duration']],
+                    1
+                    ]
         else:
-            return [
-                row[cols['Cumulative_Onset']],
-                self.get_condition(row[cols['Data']]),
-                row[cols['Duration']],
-                1
-                ]
+            return []
 
     def get_condition(self, data):
         condition_file = self.fetcher.conditions['filepath']
@@ -40,11 +52,13 @@ class ParWriter:
             next(reader)
             for row in reader:
                 if row[0] == data:
-                    print(data, row[1])
                     return row[1]
 
-    def write_file(self, data, file):
-        return
+    def write_file(self, data, output):
+        with open(output + '.par', 'w', newline='') as o:
+            writer = csv.writer(o)
+            writer.writerow(['Cumulative_Onset', 'Condition_Number_Code', 'Duration', 'Weight'])
+            writer.writerows(data)
         
         
 if __name__ == '__main__':
