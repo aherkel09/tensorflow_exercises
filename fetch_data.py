@@ -60,16 +60,17 @@ class DataFetcher:
         print('found', len(self.files), 'files')
         print('columns:', self.headers)
         
-        self.col_data['Cumulative_Onset'] = self.ask_col_name('onset')
-        self.col_data['Duration'] = self.ask_col_name('duration')
+        self.col_data['Cumulative_Onset'] = self.ask_col_name('onsets')
+        self.col_data['Duration'] = self.ask_col_name('durations')
+        self.col_data['Data'] = self.ask_col_name('the data to be analyzed')
         self.filter = self.ask_filter()
         self.conditions = self.ask_conditions()
         self.output_file = self.ask_output_file()
 
     def ask_col_name(self, col):
-        name = input('enter the name of the ' + col + ' column: ')
+        name = input('enter the name of the column containing ' + col + ' : ')
         if name in self.headers:
-            return name
+            return self.headers.index(name)
         else:
             print('error: enter a valid column name')
             return self.ask_col_name(col)
@@ -89,7 +90,7 @@ class DataFetcher:
         trial_col = input('enter the column containing the trial type info: ')
         if trial_col in self.headers:
             keep = input('enter the list of values you wish to keep: ')
-            return {'field': trial_col, 'values': keep.split(', ')}
+            return {'field': self.headers.index(trial_col), 'values': keep.split(', ')}
         else:
             print('error: enter a valid column name')
             return self.ask_trial_info()
