@@ -14,7 +14,7 @@ class ParWriter:
 
         with open(file, 'r') as f:
             reader = csv.reader(f, delimiter=self.fetcher.delimiters[self.fetcher.ext])
-            print(next(reader))
+            next(reader) # skip headers
 
     def write_file(self, data, file):
         return

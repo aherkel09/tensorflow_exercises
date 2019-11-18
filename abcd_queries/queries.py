@@ -20,7 +20,9 @@ class Queries:
                                     AND ftq_recalled=0 AND ftq_usable=1 
                                     AND NULLIF(ftq_notes, " ") IS NULL;
                                     '''],
-            'mrinback02': ['mrin', 'SELECT DISTINCT subjectkey FROM mrinback02;'],
+            'mrinback02': ['mrin', '''
+                                    SELECT DISTINCT subjectkey FROM mrinback02;
+                                    '''],
             'tbss01': ['tbss', '''
                                     SELECT DISTINCT subjectkey FROM tbss01
                                     WHERE nihtbx_picvocab_fc>45

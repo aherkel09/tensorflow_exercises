@@ -22,7 +22,7 @@ Creating temporary tables from queries...
                                     AND NULLIF(ftq_notes, " ") IS NULL;
                                     
 
-SELECT DISTINCT subjectkey FROM mrinback02;
+				    SELECT DISTINCT subjectkey FROM mrinback02;
 
 
                                     SELECT DISTINCT subjectkey FROM tbss01
@@ -45,7 +45,9 @@ Attempting to execute MegaQuery:
 
                         CREATE TEMPORARY TABLE subjects AS
                         SELECT mrin.subjectkey FROM mrinback02_temp mrin
-                     JOIN ehis01_temp ehis ON ehis.subjectkey=mrin.subjectkey JOIN fastqc01_temp fast ON fast.subjectkey=mrin.subjectkey JOIN tbss01_temp tbss ON tbss.subjectkey=mrin.subjectkey
+                     	JOIN ehis01_temp ehis ON ehis.subjectkey=mrin.subjectkey 
+			JOIN fastqc01_temp fast ON fast.subjectkey=mrin.subjectkey 
+			JOIN tbss01_temp tbss ON tbss.subjectkey=mrin.subjectkey
 
 Success. Found 41 subjects.
 

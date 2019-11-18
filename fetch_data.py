@@ -6,7 +6,7 @@ class DataFetcher:
         self.headers = []
         self.col_data = {}
         self.filter = {}
-        self.conditions = None
+        self.conditions = {}
         self.output_file = None
         self.delimiters = {'.csv': ',', '.tsv': '\t'}
         self.dir = self.ask_dir()
@@ -96,13 +96,9 @@ class DataFetcher:
 
     def ask_conditions(self):
         num_conditions = input('enter the number of conditions: ')
-        try:
-            num_conditions = int(num_conditions)
-            return self.assign_conditions(num_conditions)
-        except:
-            print('error: enter an integer number of conditions')
-            return self.ask_conditions()
-
+        num_conditions = int(num_conditions)
+        return self.assign_conditions(num_conditions)
+        
     def assign_conditions(self, num_conditions):
         if num_conditions == 1:
             return num_conditions
@@ -110,8 +106,21 @@ class DataFetcher:
             return self.get_condition_file()
 
     def get_condition_file(self):
-        file = input('enter the path to your condition file: ')
-        return file
+        path = input('enter the path to your condition file: ')
+        if os.path.isfile(path):
+            return {
+                'filepath': path,
+                'headers': self.read_condition_headers(path)
+                }
+        else:
+            print('error: please enter a valid file path')
+            return self.get_condition_file()
+        
+    def read_condition_headers(self, path):
+        extension = path.split('.')[1]
+        with open(path, 'r') as f:
+            reader = csv.reader(f, delimiter=self.delimiters['.' + extension])
+            return next(reader)
 
     def ask_output_file(self):
         return input('enter a base file name for your .par files (w/o extension): ')
