@@ -13,15 +13,28 @@ class ParWriter:
             
         for f in self.fetcher.files:
             data = self.read_file(f)
-            out_path = os.path.join('par_files', self.fetcher.output_file + str(index))
+            file_num = self.get_zeros(index)
+            out_path = os.path.join('par_files', self.fetcher.output_file + file_num)
             self.write_file(data, out_path)
             index += 1
+    
+    def get_zeros(self, num):
+        zeros = ''
+        
+        if num < 10:
+            zeros = '00'
+        elif num < 100:
+            zeros = '0'
+        
+        return zeros + str(num)
 
     def read_file(self, fname):
         file_data = []
+        
         with open(fname, 'r') as f:
             reader = csv.reader(f, delimiter=self.fetcher.delimiters[self.fetcher.ext])
             next(reader) # skip headers
+            
             for row in reader:
                 trial_filter = self.fetcher.filter
                 
@@ -34,6 +47,7 @@ class ParWriter:
 
     def read_row(self, row):
             cols = self.fetcher.col_data
+            
             return [
                 row[cols['Cumulative_Onset']],
                 self.get_condition(row[cols['Data']]),
@@ -44,9 +58,11 @@ class ParWriter:
     def get_condition(self, data):
         condition_file = self.fetcher.conditions['filepath']
         extension = '.' + condition_file.split('.')[1]
+        
         with open(condition_file, 'r') as f:
             reader = csv.reader(f, delimiter=self.fetcher.delimiters[extension])
             next(reader)
+            
             for row in reader:
                 if row[0] == data:
                     return row[1]
