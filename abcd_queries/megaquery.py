@@ -9,7 +9,8 @@ class MegaQuery:
         self.cursor = None
         self.results = None
         self.queries = {}
-        self.temptables = []
+        self.master_table = 'verified_t1_t2'
+        self.temp_tables = []
         
     
     def start(self):
@@ -28,25 +29,25 @@ class MegaQuery:
             self.cursor.execute('CREATE TEMPORARY TABLE ' + 
                                 q + '_temp AS ' + self.queries.all[q][1])
             
-            if q != 'mrinback02':
-                self.temptables += [q]
+            if q != self.master_table:
+                self.temp_tables += [q]
                 
     
     def build_the_big_one(self):
         self.results.write('\nBuilding MegaQuery...\n')
         megaquery = ('''
                         CREATE TEMPORARY TABLE subjects AS
-                        SELECT mrin.subjectkey FROM mrinback02_temp mrin
+                        SELECT veri.subjectkey FROM verified_t1_t2 veri
                     ''')
         
-        for t in self.temptables:
-            megaquery += self.add_join(t, self.queries.all[t][0], 'mrin')
+        for t in self.temp_tables:
+            megaquery += self.add_join(t, self.queries.all[t][0], 'veri')
             
         self.megaquery = megaquery
         
         
     def add_join(self, tablename, varname, join_to):
-        # join temptable to mrinback02
+        # join temp_table to master_table
         join = (' JOIN ' + tablename + '_temp ' + varname + 
                 ' ON ' + varname + '.subjectkey=' + join_to + '.subjectkey')
         

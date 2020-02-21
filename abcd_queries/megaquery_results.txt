@@ -2,40 +2,27 @@ Connected to database abcd.db
 
 Creating temporary tables from queries...
 
+                                    SELECT DISTINCT subjectkey FROM verified_t1_t2;
+                                
+
+
                                     SELECT DISTINCT subjectkey FROM ehis01
                                     WHERE ehi1b=100 AND ehi2b=100
                                     AND ehi3b=100 AND ehi4b=100;
                                 
 
 
-                                    SELECT DISTINCT subjectkey FROM fastqc01
-                                    WHERE subjectkey NOT IN (
-                                        SELECT subjectkey FROM fastqc01
-                                        WHERE abcd_compliant<>1
-                                        OR ftq_complete<>1 OR ftq_quality<>1 
-                                        OR ftq_recalled<>0 OR ftq_usable<>1
-                                        OR ftq_notes IS NOT NULL
-                                    )
-                                    AND abcd_compliant=1
-                                    AND ftq_complete=1 AND ftq_quality=1 
-                                    AND ftq_recalled=0 AND ftq_usable=1 
-                                    AND NULLIF(ftq_notes, " ") IS NULL;
-                                    
-
-				    SELECT DISTINCT subjectkey FROM mrinback02;
-
-
                                     SELECT DISTINCT subjectkey FROM tbss01
-                                    WHERE nihtbx_picvocab_fc>45
-                                    AND nihtbx_flanker_fc>45
-                                    AND nihtbx_list_fc>45
-                                    AND nihtbx_cardsort_fc>45
-                                    AND nihtbx_pattern_fc>45
-                                    AND nihtbx_picture_fc>45
-                                    AND nihtbx_reading_fc>45
-                                    AND nihtbx_fluidcomp_fc>45
-                                    AND nihtbx_cryst_fc>45
-                                    AND nihtbx_totalcomp_fc>45;
+                                    WHERE nihtbx_picvocab_fc>44
+                                    AND nihtbx_flanker_fc>44
+                                    AND nihtbx_list_fc>44
+                                    AND nihtbx_cardsort_fc>44
+                                    AND nihtbx_pattern_fc>44
+                                    AND nihtbx_picture_fc>44
+                                    AND nihtbx_reading_fc>44
+                                    AND nihtbx_fluidcomp_fc>44
+                                    AND nihtbx_cryst_fc>44
+                                    AND nihtbx_totalcomp_fc>44;
                                 
 
 Building MegaQuery...
@@ -44,12 +31,11 @@ Attempting to execute MegaQuery:
 
 
                         CREATE TEMPORARY TABLE subjects AS
-                        SELECT mrin.subjectkey FROM mrinback02_temp mrin
-                     	JOIN ehis01_temp ehis ON ehis.subjectkey=mrin.subjectkey 
-			JOIN fastqc01_temp fast ON fast.subjectkey=mrin.subjectkey 
-			JOIN tbss01_temp tbss ON tbss.subjectkey=mrin.subjectkey
+                        SELECT veri.subjectkey FROM verified_t1_t2 veri
+                        JOIN ehis01_temp ehis ON ehis.subjectkey=veri.subjectkey 
+                        JOIN tbss01_temp tbss ON tbss.subjectkey=veri.subjectkey
 
-Success. Found 41 subjects.
+Success. Found 34 subjects.
 
 Filtering data by subject...
 
@@ -72,5 +58,7 @@ CREATE TEMPORARY TABLE subjects_filtered AS SELECT * FROM subjects WHERE subject
 CREATE TEMPORARY TABLE tbi01_filtered AS SELECT * FROM tbi01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
 
 CREATE TEMPORARY TABLE tbss01_filtered AS SELECT * FROM tbss01 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
+
+CREATE TEMPORARY TABLE verified_t1_t2_filtered AS SELECT * FROM verified_t1_t2 WHERE subjectkey IN (SELECT subjectkey FROM subjects);
 
 MegaQuery complete!
