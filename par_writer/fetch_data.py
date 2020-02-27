@@ -17,7 +17,7 @@ class DataFetcher:
 
     def ask_dir(self):
         location = input('enter the directory containing your data files' +
-        '(all files & subdirectories will be searched): ')
+        ' (all files & subdirectories will be searched): ')
 
         if os.path.isdir(location):
             return location
