@@ -47,19 +47,6 @@ class WordnetReader:
 
         return offset_list
 
-    def compare_values(self, offsets):
-        compare_dir = None
-        compare_offsets = []
-        for o in offsets:
-            if len(compare_offsets) == 0:
-                compare_dir = o
-                compare_offsets = offsets[o]
-            elif offsets[o] != compare_offsets:
-                print('\nError: Wordnet offsets in\n', compare_dir, '\ndo not match offsets in\n', o, '\n')
-                raise ValueError('Wordnet Offsets Do Not Match')
-
-        return compare_offsets
-
     def get_column_number(self, first_line):
         for col in range(len(first_line)):
             if first_line[col] == self.wordnet_col:
