@@ -5,64 +5,55 @@ class WordnetReader:
     def __init__(self, root_dir, wordnet_col):
         self.root_directory = root_dir
         self.wordnet_col = wordnet_col
-        self.tsv_files = self.get_tsv_files()
-
-    def get_tsv_files(self):
-        file_tree = {}
-        for subdir, dirs, files in os.walk(self.root_directory): # check all files in all subdirectories
-            for filename in files:
-                if filename.endswith('.tsv') and subdir in file_tree.keys():
-                    file_tree[subdir].append(os.path.join(subdir, filename))
-                elif filename.endswith('.tsv'):
-                    file_tree[subdir] = [os.path.join(subdir, filename)]
-
-        return file_tree
+        self.offsets = self.get_all_offsets()
+        # [print(self.offsets[o]) for o in self.offsets]
 
     def get_all_offsets(self):
-        offsets = []
-        for subdir, file_list in self.tsv_files.items():
-            subdir_offsets = []
-            for file in file_list:
-                file_offsets = self.get_file_offsets(file)
+        file_tree = {}
+        for subdir, dirs, files in os.walk(self.root_directory): # check all files in all subdirectories
+            for file in [f for f in files if f.endswith('.tsv')]: # search .tsv files only
+                filepath = os.path.join(subdir, file)
+                file_offsets = self.get_file_offsets(filepath)
                 
-                for f in file_offsets:
-                    if f not in subdir_offsets:
-                        subdir_offsets += [f]
-                
-            for s in subdir_offsets:
-                if s not in offsets:
-                    offsets += [s]
-
-        return offsets
+                if file_offsets:
+                    file_tree[filepath] = file_offsets
+        
+        return file_tree
 
     def get_file_offsets(self, file):
         offset_list = []
         with open(file, 'r') as tsv:
             tsv = csv.reader(tsv, delimiter='\t')
-            offset_column = self.get_column_number(next(tsv)) # get offset column number from header row
-            for row in tsv:
-                offset = row[offset_column].split('.')[0]
-                if offset.isdigit() and offset not in offset_list:
-                    offset_list.append(int(offset))
+            wordnet_column = self.get_column_number(next(tsv))
+            
+            if wordnet_column:
+                for row in tsv:
+                    offset = row[wordnet_column].split('.')[0]
+                    offset_list.append(offset)
 
-        return offset_list
+                return offset_list
+            
+        return None
 
-    def get_column_number(self, first_line):
-        for col in range(len(first_line)):
-            if first_line[col] == self.wordnet_col:
+    def get_column_number(self, headers):
+        for col in range(len(headers)):
+            if headers[col] == self.wordnet_col:
                 return col
 
-        raise ValueError(self.wordnet_col, 'not found in', first_line)
-
-if __name__ == '__main__':
-    reader = WordnetReader('imageryTest', 'category_id')
-    offsets = reader.get_all_offsets()
-    print(len(offsets))
-
-    with open('imagery_offsets.csv', 'w', newline='\n') as f:
-        writer = csv.writer(f)
-        writer.writerow(['wordnet_offset', 'wordnet_lemma_name', 'wordnet_definition'])
+        raise ValueError(self.wordnet_col, 'not found in', headers)
+    
+    def search_offset(self, search):
+        search_results = {}
+        for file in self.offsets:
+            search_results[file] = []
+            for o in range(len(self.offsets[file])):
+                if self.offsets[file][o] == search:
+                    search_results[file] += [o]
         
-        for offset in offsets:
-            synset = wn.synset_from_pos_and_offset('n', int(offset))
-            writer.writerow([offset, synset.lemmas()[0].name(), synset.definition()])
+        return search_results
+    
+if __name__ == '__main__':
+    reader = WordnetReader('C:/Users/aherk/ccn_scripts/horikawa/perceptionTest', 'stim_id')
+    results = reader.search_offset('2824058')
+    [print(r, results[r]) for r in results]
+    

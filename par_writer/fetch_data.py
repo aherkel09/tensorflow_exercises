@@ -2,6 +2,7 @@ import csv, os
 
 class DataFetcher:
     def __init__(self):
+        print('working directory: ' + os.getcwd())
         self.files = []
         self.headers = []
         self.col_data = {}
@@ -11,7 +12,7 @@ class DataFetcher:
         self.delimiters = {'.csv': ',', '.tsv': '\t'}
         self.dir = self.ask_dir()
         self.ext = self.ask_ext()
-
+        
         self.get_files()
         self.get_data()
 
@@ -111,7 +112,8 @@ class DataFetcher:
         if os.path.isfile(path):
             return {
                 'filepath': path,
-                'headers': self.read_condition_headers(path)
+                'columns': self.ask_condition_columns(
+                    self.read_condition_headers(path))
                 }
         else:
             print('error: please enter a valid file path')
@@ -122,14 +124,26 @@ class DataFetcher:
         with open(path, 'r') as f:
             reader = csv.reader(f, delimiter=self.delimiters['.' + extension])
             return next(reader)
+    
+    def ask_condition_columns(self, headers):
+        print(headers)
+        data_column = input('enter the column containing your raw data: ')
+        condition_column = input('enter the column containing your condition info: ')
+        col_list = [data_column, condition_column]
+        
+        indices = [headers.index(h) if h in headers else None for h in col_list]
+        if None not in indices:
+            print(indices)
+            return indices
+        else:
+            print('error: please enter valid column names')
+            return self.ask_condition_columns(headers)
 
     def ask_output_file(self):
         return input('enter a base file name for your .par files (w/o extension): ')
 
 if __name__ == '__main__':
     df = DataFetcher()
-    df.get_data()
     
     print(df.col_data)
-    print(df.output_file)
-    
+    print(df.output_file)    

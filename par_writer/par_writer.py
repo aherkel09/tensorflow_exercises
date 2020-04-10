@@ -57,6 +57,8 @@ class ParWriter:
 
     def get_condition(self, data):
         condition_file = self.fetcher.conditions['filepath']
+        columns = self.fetcher.conditions['columns']
+        
         extension = '.' + condition_file.split('.')[1]
         
         with open(condition_file, 'r') as f:
@@ -64,12 +66,13 @@ class ParWriter:
             next(reader)
             
             for row in reader:
-                if row[0] == data:
-                    return row[1]
+                if row[columns[0]] == data:
+                    return row[columns[1]]
+                
 
     def write_file(self, data, output):
         with open(output + '.par', 'w', newline='') as o:
-            writer = csv.writer(o)
+            writer = csv.writer(o, delimiter='\t')
             writer.writerow(['Cumulative_Onset', 'Condition_Number_Code', 'Duration', 'Weight'])
             writer.writerows(data)
         
