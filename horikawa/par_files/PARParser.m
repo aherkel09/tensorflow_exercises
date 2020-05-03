@@ -1,10 +1,6 @@
 function eio=PARParser(varargin)
 eio=cell(0);
 runs=[];
-
-% define defaults at the beginning of the code so that you do not need to
-% scroll way down in case you want to change something or if the help is
-% incomplete
 options = struct('file', [],'path', pwd(), 'run', []);
  
 % read the acceptable names
