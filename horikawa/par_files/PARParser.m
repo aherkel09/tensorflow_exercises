@@ -39,13 +39,14 @@ end
 %iterate through par files; open and store each in the cell
 %array
 runs=nan(1,length(options.file));
+
 for f=1:length(options.file)
     filename=fullfile(options.path, options.file{f});
     temp=readtable(filename, 'FileType', 'text', 'Delimiter', '\t');
     expinfo=struct();
     expinfo.run=f;
     expinfo.data=table2struct(temp);
-    
+    eio{1, f}=expinfo;
 end
 
 end

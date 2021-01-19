@@ -14,8 +14,8 @@ function TSTagger(varargin)
 %     gettimecourses.sh BASH script 
 %   
 % Optional arguments:
-%   duration: a scalar indicating the number of volumes for each event
-%   (default: 1)
+%   duration: a scalar indicating the number of seconds for each event
+%   (default: 5)
 %
 %   volumes_dropped: number of INITIAL volumes dropped (i.e., volumes from 
 %       the start of the run), either as a single value or else as a vector
@@ -40,14 +40,6 @@ function TSTagger(varargin)
 %   2, meaning that each jittered value is weighted 2:1 in favour of the
 %   median)
 %
-%   oversample: for each event onset, one or more additional onsets will be
-%   generated, offset by the indicated number of seconds (e.g, [5, 10] will
-%   generate patterns at time t, t+5 and t+10 seconds). Each event will be assigned
-%   the same condition tag. This is useful for events with prolonged
-%   duration (e.g., 15 second imagery blocs). It is a colossaly bad idea to
-%   oversample short events, especially when the oversampling window would
-%   bleed into the next event. Default: no oversampling (empty vector).
-%
 % Sample Usage: 
 % for i=1:12
 %   DAT{i}.expinfo=eio{i};
@@ -58,14 +50,12 @@ function TSTagger(varargin)
 % TR=2.047; %TR in the semcat experiment
 % DROPVOLS=4; %We dropped the first 4 volumes when processing the data
 % TSTagger('tr', TR, 'volumes_dropped', DROPVOLS, 'condition', ...
-%      hifam, 'oversample', [4 8], 'dat', DAT); 
+%      hifam, 'dat', DAT); 
 
 % define defaults at the beginning of the code so that you do not need to
 % scroll way down in case you want to change something or if the help is
 % incomplete
-options = struct('tr', 0,'volumes_dropped', 0, 'condition', 0, 'cmap', [], ...
-    'dat', [], 'upsample', 4, 'precision', 3, 'jitter', 1, ...
-    'jitter_p', .10, 'bias', 2, 'subject', '', 'oversample', []);
+options = struct('tr', 0,'volumes_dropped', 0, 'condition', 0, 'cmap', [], 'dat', [], 'precision', 3, 'jitter', 1, 'jitter_p', .10, 'bias', 2, 'duration', 5);
  
 % read the acceptable names
 optionNames = fieldnames(options);
@@ -108,9 +98,9 @@ if(options.tr==0)
     error('You must specify the TR!');
 end
 
-upsample=options.upsample; %measurements per TR
+upsample=4; %measurements per TR
 offsetseconds=1; %seconds
-windowsize=5; %seconds
+windowsize=options.duration; %seconds
 
 %Should be good to go. Iterate through all files
 here=pwd();
@@ -133,19 +123,6 @@ for r=1:numel(options.dat)
     end
     tempts=[expinfo.data.timestamp];
     tempcn=[expinfo.data.condition];
-    
-    %if we are looking to oversample the timeseries (i.e., multiple
-    %examples per event)
-    if(~isempty(options.oversample))
-        oversample=[0 options.oversample]; %t+0, t+oversample(1), etc.
-        B=arrayfun(@(x) tempts+x,oversample, 'UniformOutput', false);
-        tempts=vertcat(B{:});
-        tempcn=repmat(tempcn,length(oversample),1);
-        [~,IDX]=sort(tempts);
-        tempts=tempts(IDX);
-        tempcn=tempcn(IDX);
-    end
-    
     %Calculate timestamp correction for dropped volumes
     timecorr = options.tr * dvols;
     tempts=tempts - timecorr;
@@ -177,26 +154,25 @@ for r=1:numel(options.dat)
         %What if your time window extends past the end of the BOLD data?
         timewindow(timewindow>size(upmat,1))=[]; %delete offending indices
         if(length(timewindow)<5)
-            next; %if we end up with a useless snippet just skip this event
+            continue; %if we end up with a useless snippet just skip this event
         end
         timeclip=upmat(timewindow,:);
         medclip=median(timeclip);
-        %upperclip will be the top quartile %BORKED IN THIS VERSION; maybe
-        %my laptop has a better version
-        %upperfilter=(timeclip>medclip);
-        %upperclip=timeclip;
-        %upperclip(~upperfilter)=nan;
-        %upperclip=nanmedian(upperclip);
+        %upperclip will be the top quartile
+        upperfilter=(timeclip>medclip);
+        upperclip=timeclip;
+        upperclip(~upperfilter)=nan;
+        upperclip=nanmedian(upperclip);
          %lowerclip will be the lower quartile
-        %lowerfilter=(timeclip<medclip);
-        %lowerclip=timeclip;
-        %lowerclip(~lowerfilter)=nan;
-        %lowerclip=nanmedian(lowerclip);
-        timeclip=[medclip;medclip;medclip]; %3 possible vals (lo,med,hi) for each region
+        lowerfilter=(timeclip<medclip);
+        lowerclip=timeclip;
+        lowerclip(~lowerfilter)=nan;
+        lowerclip=nanmedian(lowerclip);
+        timeclip=[lowerclip;medclip;upperclip]; %3 possible vals (lo,med,hi) for each region
         if(options.jitter==1)
             %if we just want one pattern (the median) per event:
             thesepatterns=[timeclip(2,:), thistag];
-        elseif(0) %CHANGED IF TO ZERO because BORKED
+        else
             %we want multiple patterns per event:
             thesepatterns=nan(options.jitter,size(mat,2)+1); %preallocate for speed
             rowsel=nan(1,size(mat,2));
@@ -229,12 +205,7 @@ for r=1:numel(options.dat)
         tagged_rowidx=tagged_rowidx+options.jitter; %update our index for the next event
     end
     %write out tagged data to CSV;
-    if(~isempty(options.subject) && isstr(options.subject))
-        subname=options.subject;
-    else
-        subname=expinfor.subject;
-    end
-    prefix=sprintf('%s_%03d', subname, expinfo.run);
+    prefix=sprintf('%s_%03d', expinfo.subject, expinfo.run);
     csvwrite([prefix '.csv'], taggeddata);
 end
 

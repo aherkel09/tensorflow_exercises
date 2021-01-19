@@ -1,0 +1,96 @@
+# Title Segmentation Statistics 
+# 
+# generating_program mri_segstats
+# cvs_version $Id: mri_segstats.c,v 1.121 2016/05/31 17:27:11 greve Exp $
+# cmdline mri_segstats --seg /usr/local/freesurfer/subjects/fsaverage/mri.2mm/aseg.mgz --i /home/horikawa/FS_03/bold/050/fmcpr.siemens.sm6.fsaverage.mni305.2mm.mgh --ctab-default --sum FS_03_subcort_lausanne_050.fmcpr.siemens.sm6.sum.txt --avgwf FS_03_subcort_lausanne_050.fmcpr.siemens.sm6.wav.txt 
+# sysname  Linux
+# hostname cast-psy341ws03
+# machine  x86_64
+# user     averyher
+# anatomy_type volume
+# 
+# SegVolFile /usr/local/freesurfer/subjects/fsaverage/mri.2mm/aseg.mgz 
+# SegVolFileTimeStamp  2010/06/29 16:03:17 
+# ColorTable /usr/local/freesurfer/FreeSurferColorLUT.txt 
+# ColorTableTimeStamp 2017/01/18 17:00:02 
+# InVolFile  /home/horikawa/FS_03/bold/050/fmcpr.siemens.sm6.fsaverage.mni305.2mm.mgh 
+# InVolFileTimeStamp  2021/01/06 14:57:33 
+# InVolFrame 0 
+# Only reporting non-empty segmentations
+# VoxelVolume_mm3 8 
+# TableCol  1 ColHeader Index 
+# TableCol  1 FieldName Index 
+# TableCol  1 Units     NA 
+# TableCol  2 ColHeader SegId 
+# TableCol  2 FieldName Segmentation Id
+# TableCol  2 Units     NA
+# TableCol  3 ColHeader NVoxels 
+# TableCol  3 FieldName Number of Voxels
+# TableCol  3 Units     unitless
+# TableCol  4 ColHeader Volume_mm3
+# TableCol  4 FieldName Volume
+# TableCol  4 Units     mm^3
+# TableCol  5 ColHeader StructName
+# TableCol  5 FieldName Structure Name
+# TableCol  5 Units     NA
+# TableCol  6 ColHeader Mean 
+# TableCol  6 FieldName Intensity Mean
+# TableCol  6 Units     unknown
+# TableCol  7 ColHeader StdDev
+# TableCol  7 FieldName Itensity StdDev
+# TableCol  7 Units     unknown
+# TableCol  8 ColHeader Min
+# TableCol  8 FieldName Intensity Min
+# TableCol  8 Units     unknown
+# TableCol  9 ColHeader Max
+# TableCol  9 FieldName Intensity Max
+# TableCol  9 Units     unknown
+# TableCol 10 ColHeader Range
+# TableCol 10 FieldName Intensity Range
+# TableCol 10 Units     unknown
+# NRows 43 
+# NTableCols 10 
+# ColHeaders  Index SegId NVoxels Volume_mm3 StructName Mean StdDev Min Max Range  
+  1   0    357164  2857312.0  Unknown                            0.1891     1.6768   -21.5946    46.1859    67.7805 
+  2   2     33073   264584.0  Left-Cerebral-White-Matter         0.2491     1.3270    -8.9216    22.4913    31.4130 
+  3   3     38085   304680.0  Left-Cerebral-Cortex               0.1363     1.3042   -12.2621    40.8732    53.1353 
+  4   4      2645    21160.0  Left-Lateral-Ventricle             6.1083     8.0979    -4.2643    43.9227    48.1870 
+  5   5        61      488.0  Left-Inf-Lat-Vent                  2.2526     2.4113    -4.0964     6.9720    11.0685 
+  6   7      1708    13664.0  Left-Cerebellum-White-Matter       3.9206     1.9795    -1.8502     9.6322    11.4824 
+  7   8      7928    63424.0  Left-Cerebellum-Cortex             4.7684     3.2912   -11.1754    21.3828    32.5581 
+  8  10      1070     8560.0  Left-Thalamus-Proper               5.4696     4.7787    -5.5278    39.1672    44.6951 
+  9  11       435     3480.0  Left-Caudate                       6.3849     4.0277    -2.4277    16.8451    19.2728 
+ 10  12       885     7080.0  Left-Putamen                       2.8499     3.4809    -4.8661    14.4438    19.3098 
+ 11  13       205     1640.0  Left-Pallidum                     -1.0308     2.7219    -6.7698     5.1398    11.9096 
+ 12  14       240     1920.0  3rd-Ventricle                     18.0416    11.0855    -3.4497    44.1359    47.5856 
+ 13  15       287     2296.0  4th-Ventricle                      9.6420     4.1621     0.6526    22.2168    21.5642 
+ 14  16      3262    26096.0  Brain-Stem                         6.8880     4.5699   -15.6936    29.8671    45.5607 
+ 15  17       636     5088.0  Left-Hippocampus                   1.6346     2.7877    -4.3276    12.5068    16.8344 
+ 16  18       231     1848.0  Left-Amygdala                      4.3468     1.1453     0.0653     7.1012     7.0359 
+ 17  24       217     1736.0  CSF                                7.0098     7.4937    -5.7236    23.4846    29.2082 
+ 18  26        87      696.0  Left-Accumbens-area               10.4306     3.1117     3.4036    16.8216    13.4180 
+ 19  28       611     4888.0  Left-VentralDC                     4.0336     5.7238    -4.5652    34.6093    39.1746 
+ 20  30         6       48.0  Left-vessel                        6.4800     0.6491     5.6788     7.2996     1.6208 
+ 21  31       103      824.0  Left-choroid-plexus                1.8986     3.0389    -1.1075     9.8993    11.0068 
+ 22  41     33712   269696.0  Right-Cerebral-White-Matter        0.1315     1.0808    -7.7167    15.1553    22.8720 
+ 23  42     37866   302928.0  Right-Cerebral-Cortex              0.0942     0.9708    -6.2319    36.8822    43.1141 
+ 24  43      2442    19536.0  Right-Lateral-Ventricle            3.7257     5.0390    -4.1931    20.6251    24.8182 
+ 25  44        58      464.0  Right-Inf-Lat-Vent                 0.4303     2.1560    -3.1210     6.8849    10.0060 
+ 26  46      1677    13416.0  Right-Cerebellum-White-Matter      3.4333     1.9782    -1.7430    12.2179    13.9609 
+ 27  47      7811    62488.0  Right-Cerebellum-Cortex            4.7338     3.0375    -5.7531    19.3812    25.1343 
+ 28  49      1054     8432.0  Right-Thalamus-Proper              5.2272     3.2123    -2.0283    19.1563    21.1846 
+ 29  50       443     3544.0  Right-Caudate                      3.0285     2.9802    -3.8097    12.7740    16.5837 
+ 30  51       827     6616.0  Right-Putamen                      2.7286     2.9486    -4.7048    10.4775    15.1823 
+ 31  52       210     1680.0  Right-Pallidum                     1.5490     2.0337    -2.0801     6.2599     8.3400 
+ 32  53       653     5224.0  Right-Hippocampus                  1.7484     2.7976   -13.9355    10.0012    23.9367 
+ 33  54       267     2136.0  Right-Amygdala                     0.9651     2.1578    -7.8104     6.8976    14.7080 
+ 34  58        85      680.0  Right-Accumbens-area               4.6593     2.3260     0.0343    10.6234    10.5891 
+ 35  60       589     4712.0  Right-VentralDC                    3.8909     6.0415   -12.8984    35.2233    48.1218 
+ 36  62         4       32.0  Right-vessel                       3.6825     2.0524     1.1339     6.0930     4.9590 
+ 37  63        56      448.0  Right-choroid-plexus               3.9261     3.7764    -2.0353    12.3884    14.4237 
+ 38  85         6       48.0  Optic-Chiasm                      35.7313     8.9711    23.0226    45.2625    22.2399 
+ 39 251       164     1312.0  CC_Posterior                       0.9014     2.7154     0.0000    11.8850    11.8850 
+ 40 252        49      392.0  CC_Mid_Posterior                   0.0000     0.0000     0.0000     0.0000     0.0000 
+ 41 253        65      520.0  CC_Central                         0.0000     0.0000     0.0000     0.0000     0.0000 
+ 42 254        69      552.0  CC_Mid_Anterior                    0.0000     0.0000     0.0000     0.0000     0.0000 
+ 43 255       122      976.0  CC_Anterior                        0.1566     0.5791     0.0000     3.4567     3.4567 
